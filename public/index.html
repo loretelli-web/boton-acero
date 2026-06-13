@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#3D4D5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="/iconoacero.png">
+<link rel="icon" type="image/png" href="/iconoacero.png">
+<meta property="og:title" content="Botón Acero — Control · Foco · Descarga">
+<meta property="og:description" content="Herramienta de regulación inmediata para hombres bajo presión. Recuperá el control en menos de 3 minutos.">
+<meta property="og:image" content="https://boton-acero.vercel.app/logoacero.png">
+<meta property="og:type" content="website">
+<title>Botón Acero — Regulación Inmediata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Oswald:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { height: 100%; }
+  body { font-family: 'Poppins', sans-serif; background: #EDEFF1; min-height: 100%; display: flex; justify-content: center; }
+  .app { width: 100%; max-width: 460px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 22px 52px; }
+
+  .header { width:100%; padding:28px 0 16px; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .brand-main { font-family:'Oswald',sans-serif; font-size:23px; font-weight:600; color:#2A3744; letter-spacing:.06em; text-transform:uppercase; }
+  .brand-sub { font-size:10px; font-weight:400; letter-spacing:.22em; text-transform:uppercase; color:#6A7A8A; opacity:.8; }
+  .header-divider { width:36px; height:2px; background:#5A6E80; margin-top:8px; }
+
+  .screen { display:none; flex-direction:column; align-items:center; width:100%; }
+  .screen.active { display:flex; }
+
+  .welcome-eyebrow { font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#3D4D5C; font-weight:600; text-align:center; margin-top:24px; }
+  .welcome-title { font-family:'Oswald',sans-serif; font-size:38px; font-weight:600; line-height:1.1; color:#1A2530; margin-top:10px; text-align:center; text-transform:uppercase; letter-spacing:.02em; }
+  .welcome-title em { font-style:normal; color:#3D4D5C; }
+  .welcome-sub { font-size:14px; line-height:1.7; color:#6A7A8A; margin-top:14px; text-align:center; font-weight:300; max-width:300px; }
+
+  .pulse-wrap { margin:44px 0 32px; display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .pulse-btn { width:150px; height:150px; border-radius:50%; background:#3D4D5C; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; animation:pulseAcero 2.8s ease-in-out infinite; transition:transform .15s; box-shadow:0 8px 32px rgba(61,77,92,.3); }
+  .pulse-btn:active { transform:scale(.95); animation:none; }
+  .pulse-btn-label { font-family:'Oswald',sans-serif; font-size:16px; font-weight:500; color:white; text-align:center; line-height:1.2; pointer-events:none; text-transform:uppercase; letter-spacing:.03em; }
+  .pulse-btn-sub { font-size:10px; font-weight:300; color:rgba(255,255,255,.6); pointer-events:none; letter-spacing:.05em; }
+  @keyframes pulseAcero { 0%{box-shadow:0 0 0 0 rgba(61,77,92,.4)}70%{box-shadow:0 0 0 26px rgba(61,77,92,0)}100%{box-shadow:0 0 0 0 rgba(61,77,92,0)} }
+  .pulse-hint { font-size:12px; color:#6A7A8A; font-weight:300; opacity:.7; }
+
+  .section-title { font-family:'Oswald',sans-serif; font-size:24px; font-weight:500; line-height:1.2; text-align:center; color:#1A2530; margin-bottom:6px; margin-top:8px; text-transform:uppercase; letter-spacing:.02em; }
+  .section-sub { font-size:13px; color:#6A7A8A; text-align:center; margin-bottom:22px; font-weight:300; line-height:1.55; }
+
+  .usuario-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; width:100%; }
+  .usuario-card { background:#F7F9FA; border:1.5px solid #C5D0D8; border-radius:12px; padding:18px 12px; cursor:pointer; text-align:center; display:flex; flex-direction:column; align-items:center; gap:7px; transition:all .2s; -webkit-user-select:none; }
+  .usuario-card.selected { border-color:#3D4D5C; background:#DCE3E8; }
+  .usuario-icon { font-size:26px; }
+  .usuario-label { font-size:13px; font-weight:600; color:#1A2530; line-height:1.3; }
+  .usuario-sublabel { font-size:11px; font-weight:300; color:#6A7A8A; line-height:1.3; }
+
+  .badge { display:inline-flex; align-items:center; gap:6px; background:#DCE3E8; border:1px solid #5A6E80; border-radius:8px; padding:5px 13px; font-size:12px; color:#2A3744; font-weight:600; margin-bottom:18px; margin-top:4px; text-transform:uppercase; letter-spacing:.03em; }
+
+  .feel-label { font-size:13px; color:#6A7A8A; margin-bottom:8px; font-weight:300; line-height:1.6; width:100%; }
+  .feel-textarea { width:100%; min-height:100px; border:1.5px solid #C5D0D8; border-radius:12px; padding:14px; font-family:'Poppins',sans-serif; font-size:15px; font-weight:300; color:#1A2530; background:#F7F9FA; resize:none; outline:none; transition:border-color .2s; line-height:1.6; }
+  .feel-textarea:focus { border-color:#3D4D5C; }
+
+  .chips-label { font-size:11px; color:#8A99A8; font-weight:400; margin-bottom:8px; width:100%; letter-spacing:.05em; text-transform:uppercase; }
+  .chips { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:18px; width:100%; }
+  .chip { background:#F7F9FA; border:1.5px solid #C5D0D8; border-radius:8px; padding:7px 13px; font-size:12px; cursor:pointer; transition:all .15s; color:#6A7A8A; font-family:'Poppins',sans-serif; -webkit-user-select:none; }
+  .chip.active { background:#DCE3E8; border-color:#3D4D5C; color:#2A3744; }
+
+  .btn-main { width:100%; padding:17px; background:#3D4D5C; color:white; border:none; border-radius:12px; font-family:'Oswald',sans-serif; font-size:16px; font-weight:500; cursor:pointer; transition:background .2s,transform .1s; -webkit-appearance:none; text-transform:uppercase; letter-spacing:.04em; }
+  .btn-main:active { transform:scale(.98); background:#1A2530; }
+  .btn-main:disabled { background:#C5D0D8; cursor:not-allowed; }
+  .btn-ghost { background:none; border:1.5px solid #C5D0D8; color:#6A7A8A; border-radius:12px; padding:13px; font-family:'Poppins',sans-serif; font-size:14px; cursor:pointer; width:100%; margin-top:10px; -webkit-appearance:none; }
+  .btn-ghost:active { border-color:#3D4D5C; color:#2A3744; }
+  .back-btn { background:none; border:none; color:#6A7A8A; font-size:12px; cursor:pointer; padding:8px 0; display:flex; align-items:center; gap:4px; font-family:'Poppins',sans-serif; margin-top:4px; font-weight:300; align-self:flex-start; }
+
+  .loading-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:65vh; gap:22px; width:100%; }
+  .breath-circle { width:88px; height:88px; border-radius:12px; background:#5A6E80; animation:breathe 4s ease-in-out infinite; opacity:.75; }
+  @keyframes breathe { 0%,100%{transform:scale(.82) rotate(0deg);opacity:.5}50%{transform:scale(1.12) rotate(45deg);opacity:.9} }
+  .loading-text { font-size:14px; color:#6A7A8A; font-weight:300; text-align:center; line-height:1.7; }
+  .loading-sub { font-size:11px; color:#8A99A8; text-align:center; font-weight:300; letter-spacing:.05em; }
+
+  .response-card { background:#F7F9FA; border-radius:14px; padding:26px 22px; width:100%; margin-top:6px; border:1px solid #C5D0D8; box-shadow:0 4px 24px rgba(61,77,92,.08); }
+  .response-eyebrow { font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#3D4D5C; font-weight:600; margin-bottom:14px; }
+  .response-text { font-size:14px; line-height:1.85; color:#1A2530; font-weight:300; }
+  .response-text strong { font-weight:600; color:#2A3744; display:block; margin:10px 0 6px; font-size:16px; font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.02em; }
+  .response-text p { margin-bottom:8px; }
+
+  .paywall-card { background:#F7F9FA; border-radius:14px; padding:28px 22px; width:100%; margin-top:6px; border:1.5px solid #3D4D5C; text-align:center; }
+  .paywall-icon { font-size:36px; margin-bottom:12px; }
+  .paywall-title { font-family:'Oswald',sans-serif; font-size:22px; color:#2A3744; margin-bottom:10px; line-height:1.2; text-transform:uppercase; letter-spacing:.02em; }
+  .paywall-sub { font-size:13px; color:#6A7A8A; font-weight:300; line-height:1.6; margin-bottom:20px; }
+  .paywall-price { font-size:28px; font-weight:600; color:#3D4D5C; margin-bottom:4px; font-family:'Oswald',sans-serif; }
+  .paywall-trial { font-size:12px; color:#8A99A8; margin-bottom:20px; font-weight:300; }
+  .btn-pay { width:100%; padding:17px; background:#3D4D5C; color:white; border:none; border-radius:12px; font-family:'Oswald',sans-serif; font-size:16px; font-weight:500; cursor:pointer; text-decoration:none; display:block; text-align:center; text-transform:uppercase; letter-spacing:.04em; }
+  .btn-pay:active { background:#1A2530; }
+
+  .error-note { background:#F7F9FA; border:1px solid #C5D0D8; border-radius:12px; padding:16px; font-size:13px; color:#2A3744; line-height:1.6; width:100%; margin-top:12px; font-weight:300; }
+
+  .footer { margin-top:28px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .footer-zf { font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:#6A7A8A; opacity:.45; }
+  .footer-legal { font-size:10px; color:#6A7A8A; opacity:.35; font-weight:300; max-width:260px; line-height:1.5; }
+
+  .action-row { display:flex; flex-direction:column; gap:10px; width:100%; margin-top:18px; }
+  .mt24 { margin-top:24px; }
+
+  @media (prefers-reduced-motion: reduce) { .pulse-btn,.breath-circle { animation:none; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <audio id="bg-music" loop>
+    <source src="/focusacero.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- BIENVENIDA -->
+  <div class="screen active" id="s-welcome">
+    <div class="header">
+      <div class="brand-main">Botón Acero</div>
+      <div class="brand-sub">Control · Foco · Descarga</div>
+      <div class="header-divider"></div>
+    </div>
+    <div class="welcome-eyebrow">Para cuando todo aprieta</div>
+    <p class="welcome-title">Recuperá<br>el <em>control.</em></p>
+    <p class="welcome-sub">No es debilidad. Es estrategia.<br>Tres minutos. Una herramienta. Ahora.</p>
+    <div class="pulse-wrap">
+      <button class="pulse-btn" onclick="goTo('s-usuario')">
+        <span class="pulse-btn-label">Necesito<br>resetear</span>
+        <span class="pulse-btn-sub">tocá aquí</span>
+      </button>
+      <p class="pulse-hint">Disponible cuando lo necesites</p>
+    </div>
+    <div class="footer">
+      <span class="footer-zf">· Zen Femenino ·</span>
+      <span class="footer-legal">Este espacio no reemplaza atención profesional.</span>
+    </div>
+  </div>
+
+  <!-- USUARIO -->
+  <div class="screen" id="s-usuario">
+    <div class="header">
+      <div class="brand-main">Botón Acero</div>
+      <div class="header-divider"></div>
+    </div>
+    <p class="section-title">¿Qué está pasando?</p>
+    <p class="section-sub">Elegí la situación.<br>La herramienta se adapta.</p>
+    <div class="usuario-grid">
+      <div class="usuario-card" onclick="selectUsuario(this,'⚙️','Presión en el trabajo','hombre bajo presión laboral fuerte, deadlines, exigencia, responsabilidad')">
+        <span class="usuario-icon">⚙️</span>
+        <span class="usuario-label">Presión laboral</span>
+        <span class="usuario-sublabel">trabajo, deadlines, exigencia</span>
+      </div>
+      <div class="usuario-card" onclick="selectUsuario(this,'⚡','Conflicto o discusión','hombre que viene de un conflicto, discusión o confrontación y quedó cargado')">
+        <span class="usuario-icon">⚡</span>
+        <span class="usuario-label">Conflicto</span>
+        <span class="usuario-sublabel">discusión o confrontación</span>
+      </div>
+      <div class="usuario-card" onclick="selectUsuario(this,'🔩','No doy abasto','hombre sobrecargado, demasiadas cosas, sensación de no llegar a todo')">
+        <span class="usuario-icon">🔩</span>
+        <span class="usuario-label">Sobrecarga</span>
+        <span class="usuario-sublabel">no doy abasto</span>
+      </div>
+      <div class="usuario-card" onclick="selectUsuario(this,'🔥','Bronca acumulada','hombre con bronca, irritación o ira acumulada que necesita descargar')">
+        <span class="usuario-icon">🔥</span>
+        <span class="usuario-label">Bronca</span>
+        <span class="usuario-sublabel">irritación acumulada</span>
+      </div>
+    </div>
+    <button class="btn-main mt24" id="btn-continuar" disabled onclick="goTo('s-input')">Continuar</button>
+  </div>
+
+  <!-- INPUT -->
+  <div class="screen" id="s-input">
+    <div class="header">
+      <div class="brand-main">Botón Acero</div>
+      <div class="header-divider"></div>
+    </div>
+    <button class="back-btn" onclick="goTo('s-usuario')">← Volver</button>
+    <div id="badge-input"></div>
+    <p class="section-title">Contá qué pasa</p>
+    <p class="feel-label" style="margin-top:8px">Escribí qué está pasando, o tocá una o más opciones. Como te resulte más rápido.</p>
+    <textarea class="feel-textarea" id="feel-input"
+      placeholder="Vengo de una reunión que salió mal, tengo la cabeza a mil, no puedo enfocarme..."></textarea>
+    <p class="chips-label" style="margin-top:12px">O marcá lo que va</p>
+    <div class="chips">
+      <div class="chip" onclick="toggleChip(this,'Tengo la cabeza a mil')">Cabeza a mil</div>
+      <div class="chip" onclick="toggleChip(this,'Estoy que exploto')">Estoy que exploto</div>
+      <div class="chip" onclick="toggleChip(this,'No puedo enfocarme')">No me enfoco</div>
+      <div class="chip" onclick="toggleChip(this,'Estoy tenso')">Estoy tenso</div>
+      <div class="chip" onclick="toggleChip(this,'No llego a todo')">No llego a todo</div>
+      <div class="chip" onclick="toggleChip(this,'Tengo bronca')">Tengo bronca</div>
+      <div class="chip" onclick="toggleChip(this,'No puedo dormir')">No puedo dormir</div>
+      <div class="chip" onclick="toggleChip(this,'Estoy al límite')">Estoy al límite</div>
+      <div class="chip" onclick="toggleChip(this,'Doy vueltas a lo mismo')">Doy vueltas a lo mismo</div>
+      <div class="chip" onclick="toggleChip(this,'Necesito despejar')">Necesito despejar</div>
+    </div>
+    <button class="btn-main" id="btn-ejercicio" disabled onclick="buscarEjercicio()">Dame una herramienta</button>
+  </div>
+
+  <!-- CARGANDO -->
+  <div class="screen" id="s-loading">
+    <div class="loading-wrap">
+      <div class="breath-circle"></div>
+      <p class="loading-text">Preparando tu herramienta.<br><strong style="font-weight:400">Respirá. Inhalá 4, exhalá 4.</strong></p>
+      <p class="loading-sub">Tres minutos. Volvés con el control.</p>
+    </div>
+  </div>
+
+  <!-- RESPUESTA -->
+  <div class="screen" id="s-response">
+    <div class="header">
+      <div class="brand-main">Botón Acero</div>
+      <div class="header-divider"></div>
+    </div>
+    <div id="badge-response"></div>
+    <div id="response-content"></div>
+    <div class="action-row">
+      <button class="btn-main" onclick="otroEjercicio()">Otra herramienta</button>
+      <button class="btn-ghost" onclick="detenerMusica(); goTo('s-welcome')">Volver al inicio</button>
+    </div>
+    <div class="footer" style="margin-top:24px">
+      <span class="footer-zf">· Zen Femenino ·</span>
+      <span class="footer-legal">Este espacio no reemplaza atención profesional.</span>
+    </div>
+  </div>
+
+  <!-- PAYWALL -->
+  <div class="screen" id="s-paywall">
+    <div class="header">
+      <div class="brand-main">Botón Acero</div>
+      <div class="header-divider"></div>
+    </div>
+    <div class="paywall-card">
+      <div class="paywall-icon">🔧</div>
+      <p class="paywall-title">Tus primeras<br>herramientas fueron gratis.</p>
+      <p class="paywall-sub">Botón Acero está para cuando lo necesites, las veces que lo necesites. Acceso ilimitado por menos de lo que cuesta un café.</p>
+      <p class="paywall-price">USD 9,99<span style="font-size:14px;font-weight:300;color:#6A7A8A">/mes</span></p>
+      <p class="paywall-trial">Cancelás cuando quieras</p>
+      <a class="btn-pay" href="https://tez.lemonsqueezy.com/checkout/buy/f7bbe892-30d3-4c66-92d0-e2e1c64f05bf" target="_blank">Suscribirme</a>
+    </div>
+    <button class="btn-ghost" style="margin-top:12px" onclick="goTo('s-welcome')">Volver al inicio</button>
+    <div class="footer" style="margin-top:24px">
+      <span class="footer-zf">· Zen Femenino ·</span>
+      <span class="footer-legal">Este espacio no reemplaza atención profesional.</span>
+    </div>
+  </div>
+
+</div>
+<script>
+  let usuarioActual = { icon:'', label:'', contexto:'' };
+  let chipsActivos = [];
+  let ejercicioAnterior = '';
+  let usoCount = parseInt(localStorage.getItem('ba_acero_usos') || '0');
+
+  const CHIPS_LISTA = ['Tengo la cabeza a mil','Estoy que exploto','No puedo enfocarme',
+    'Estoy tenso','No llego a todo','Tengo bronca','No puedo dormir','Estoy al límite',
+    'Doy vueltas a lo mismo','Necesito despejar'];
+
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  function selectUsuario(el, icon, label, contexto) {
+    document.querySelectorAll('.usuario-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    usuarioActual = { icon, label, contexto };
+    document.getElementById('btn-continuar').disabled = false;
+    const badge = `<div class="badge">${icon} ${label}</div>`;
+    document.getElementById('badge-input').innerHTML = badge;
+    document.getElementById('badge-response').innerHTML = badge;
+  }
+
+  function toggleChip(el, texto) {
+    el.classList.toggle('active');
+    chipsActivos = el.classList.contains('active')
+      ? [...chipsActivos, texto]
+      : chipsActivos.filter(c => c !== texto);
+    const ta = document.getElementById('feel-input');
+    const libre = ta.value.split('. ')
+      .map(s => s.trim().replace(/\.$/, ''))
+      .filter(s => s && !CHIPS_LISTA.includes(s))
+      .join('. ');
+    const todo = [libre, ...chipsActivos].filter(Boolean).join('. ');
+    ta.value = todo ? todo + '.' : '';
+    document.getElementById('btn-ejercicio').disabled = !ta.value.trim();
+  }
+
+  document.getElementById('feel-input').addEventListener('input', function() {
+    document.getElementById('btn-ejercicio').disabled = !this.value.trim();
+  });
+
+  function iniciarMusica() {
+    const audio = document.getElementById('bg-music');
+    audio.volume = 0.3;
+    audio.play().catch(() => {});
+  }
+
+  function toggleMusica() {
+    const audio = document.getElementById('bg-music');
+    const btn = document.getElementById('btn-musica');
+    if (audio.paused) { audio.play(); btn.innerHTML = '🔊 audio'; }
+    else { audio.pause(); btn.innerHTML = '🔇 audio'; }
+  }
+
+  function detenerMusica() {
+    const audio = document.getElementById('bg-music');
+    audio.pause(); audio.currentTime = 0;
+  }
+
+  async function buscarEjercicio() {
+    if (usoCount >= 3) { goTo('s-paywall'); return; }
+    const texto = document.getElementById('feel-input').value.trim();
+    if (!texto) return;
+    goTo('s-loading');
+
+    try {
+      const res = await fetch('/api/ejercicio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          perfil: `${usuarioActual.label} — ${usuarioActual.contexto}`,
+          situacion: texto,
+          ejercicioAnterior: ejercicioAnterior || ''
+        })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      ejercicioAnterior = data.texto;
+      usoCount++;
+      localStorage.setItem('ba_acero_usos', usoCount.toString());
+
+      const html = data.texto
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .split('\n').map(l => `<p>${l}</p>`).join('');
+
+      document.getElementById('response-content').innerHTML =
+        `<div class="response-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div class="response-eyebrow" style="margin-bottom:0">Tu herramienta · ahora</div>
+            <button onclick="toggleMusica()" id="btn-musica" style="background:none;border:1px solid #C5D0D8;border-radius:8px;padding:4px 10px;font-size:11px;color:#8A99A8;cursor:pointer;font-family:Poppins,sans-serif;">🔊 audio</button>
+          </div>
+          <div class="response-text">${html}</div>
+        </div>`;
+
+      iniciarMusica();
+      goTo('s-response');
+    } catch(e) {
+      document.getElementById('response-content').innerHTML =
+        `<div class="error-note"><strong>Falló algo.</strong><br><br>
+        Mientras tanto: inhalá 4 segundos, retené 4, exhalá 4, retené 4. Repetí 4 veces. Eso baja las pulsaciones y te devuelve el control.</div>`;
+      goTo('s-response');
+    }
+  }
+
+  function otroEjercicio() {
+    if (usoCount >= 3) { goTo('s-paywall'); return; }
+    document.getElementById('feel-input').value = '';
+    chipsActivos = [];
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    document.getElementById('btn-ejercicio').disabled = true;
+    detenerMusica();
+    goTo('s-input');
+  }
+</script>
+</body>
+</html>
